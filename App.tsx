@@ -1,118 +1,75 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import * as React from 'react';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {StyleSheet, View, Text, Pressable, Image} from 'react-native';
+import HotspotScreen from './HotspotScreen';
+import WifiScreen from './WifiScreen';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default function App() {
+  const [selected, setSelected] = React.useState<string | null>(null);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  if (selected === 'wifi') {
+    return <WifiScreen back={() => setSelected(null)} />;
+  }
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  if (selected === 'hotspot') {
+    return <HotspotScreen back={() => setSelected(null)} />;
+  }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          source={require('./assets/tethering-logo.webp')}
+          style={styles.headerImg}
+        />
+        <Text style={{fontSize: 20}}>React Native Tethering</Text>
+      </View>
+      <View style={styles.buttonsContainer}>
+        <Pressable
+          style={styles.button}
+          android_ripple={{color: '#fff'}}
+          onPress={() => setSelected('wifi')}>
+          <Text style={styles.buttonText}>Use WiFi</Text>
+        </Pressable>
+        <Pressable
+          style={styles.button}
+          android_ripple={{color: '#fff'}}
+          onPress={() => setSelected('hotspot')}>
+          <Text style={styles.buttonText}>Use Hotspot</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  buttonsContainer: {
+    width: '100%',
+    alignItems: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  button: {
+    width: '50%',
+    padding: 14,
+    backgroundColor: '#359962',
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
   },
-  highlight: {
-    fontWeight: '700',
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+  },
+  headerImg: {
+    width: 200,
+    height: 200,
   },
 });
-
-export default App;
