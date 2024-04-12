@@ -2,7 +2,7 @@
  * Sample BLE React Native App
  */
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,10 +16,12 @@ import {
   FlatList,
   TouchableHighlight,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { useNavigation } from '@react-navigation/native';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {useNavigation} from '@react-navigation/native';
+import {Ionicons} from '@expo/vector-icons'; // Import from Expo Icons
 
 import BleManager, {
   BleDisconnectPeripheralEvent,
@@ -29,6 +31,7 @@ import BleManager, {
   BleScanMode,
   Peripheral,
 } from 'react-native-ble-manager';
+import CustomIcon from './UI-components/BTDeviceIcon';
 
 const SECONDS_TO_SCAN_FOR = 3;
 const SERVICE_UUIDS: string[] = [];
@@ -63,6 +66,9 @@ const ScanDevicesScreen = () => {
       try {
         console.debug('[startScan] starting scan...');
         setIsScanning(true);
+        BleManager.enableBluetooth().then(() => {
+          console.debug('Bluetooth is turned on!');
+        });
         BleManager.scan(SERVICE_UUIDS, SECONDS_TO_SCAN_FOR, ALLOW_DUPLICATES, {
           matchMode: BleScanMatchMode.Sticky,
           scanMode: BleScanMode.LowLatency,
@@ -74,6 +80,15 @@ const ScanDevicesScreen = () => {
           .catch((err: any) => {
             console.error('[startScan] ble scan returned in error', err);
           });
+
+        // Set timeout for 30 seconds
+        setTimeout(() => {
+          console.debug('[startScan] stopping scan...');
+          BleManager.stopScan().then(() => {
+            console.debug('[startScan] scan stopped.');
+            setIsScanning(false);
+          });
+        }, 30000); // 30 seconds in milliseconds
       } catch (error) {
         console.error('[startScan] ble scan error thrown', error);
       }
@@ -84,9 +99,12 @@ const ScanDevicesScreen = () => {
     setPeripherals(new Map<Peripheral['id'], Peripheral>());
     try {
       console.debug('[startCompanionScan] starting companion scan...');
-      BleManager.companionScan(SERVICE_UUIDS, { single: false })
-        .then((peripheral) => {
-          console.debug('[startCompanionScan] scan promise returned successfully.', peripheral);
+      BleManager.companionScan(SERVICE_UUIDS, {single: false})
+        .then(peripheral => {
+          console.debug(
+            '[startCompanionScan] scan promise returned successfully.',
+            peripheral,
+          );
           if (peripheral != null) {
             setPeripherals(map => {
               return new Map(map.set(peripheral.id, peripheral));
@@ -99,7 +117,7 @@ const ScanDevicesScreen = () => {
     } catch (error) {
       console.error('[startCompanionScan] ble scan error thrown', error);
     }
-  }
+  };
 
   const handleStopScan = () => {
     setIsScanning(false);
@@ -209,7 +227,7 @@ const ScanDevicesScreen = () => {
         error,
       );
     }
-  }
+  };
 
   const connectPeripheral = async (peripheral: Peripheral) => {
     try {
@@ -312,7 +330,7 @@ const ScanDevicesScreen = () => {
 
   useEffect(() => {
     try {
-      BleManager.start({ showAlert: false })
+      BleManager.start({showAlert: false})
         .then(() => console.debug('BleManager started.'))
         .catch((error: any) =>
           console.error('BeManager could not be started.', error),
@@ -396,13 +414,13 @@ const ScanDevicesScreen = () => {
     }
   };
 
-  const renderItem = ({ item }: { item: Peripheral }) => {
+  const renderItem = ({item}: {item: Peripheral}) => {
     const backgroundColor = item.connected ? '#069400' : Colors.white;
     return (
       <TouchableHighlight
         underlayColor="#0082FC"
         onPress={() => togglePeripheralConnection(item)}>
-        <View style={[styles.row, { backgroundColor }]}>
+        <View style={[styles.row, {backgroundColor}]}>
           <Text style={styles.peripheralName}>
             {/* completeLocalName (item.name) & shortAdvertisingName (advertising.localName) may not always be the same */}
             {item.name} - {item?.advertising?.localName}
@@ -453,11 +471,36 @@ const ScanDevicesScreen = () => {
 
         <FlatList
           data={Array.from(peripherals.values())}
-          contentContainerStyle={{ rowGap: 12 }}
+          contentContainerStyle={{rowGap: 12}}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         />
       </SafeAreaView>
+      <View style={styles.container}>
+        {isScanning ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loadingText}>Scanning for devices...</Text>
+          </View>
+        ) : (
+          <View style={styles.radarContainer}>
+            {/* Display found devices as icons on the radar screen */}
+            {[...peripherals.values()].map((device, index) => (
+              <>
+                <View key={index} style={styles.deviceIcon}>
+                  <Text style={styles.customIcon}>
+                    Device {index} - {device.name}
+                  </Text>
+                </View>
+                {/*
+                  TODO: Implement this
+                  <CustomIcon key={index} device={device} index={index} />
+                */}
+              </>
+            ))}
+          </View>
+        )}
+      </View>
     </>
   );
 };
@@ -550,6 +593,35 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: 'center',
     color: Colors.white,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#000',
+  },
+  radarContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deviceIcon: {
+    margin: 10,
+  },
+  customIcon: {
+    color: '#555',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
