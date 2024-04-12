@@ -1,8 +1,14 @@
 import * as React from 'react';
 
 import {StyleSheet, View, Text, Pressable, Image} from 'react-native';
-import HotspotScreen from './HotspotScreen';
-import WifiScreen from './WifiScreen';
+import HotspotScreen from './components/HotspotScreen';
+import WifiScreen from './components/WifiScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ScanDevicesScreen from './components/ScanDevicesScreen';
+import PeripheralDetailsScreen from './components/PeripheralDetailsScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [selected, setSelected] = React.useState<string | null>(null);
@@ -16,29 +22,15 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          source={require('./assets/tethering-logo.webp')}
-          style={styles.headerImg}
-        />
-        <Text style={{fontSize: 20}}>React Native Tethering</Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <Pressable
-          style={styles.button}
-          android_ripple={{color: '#fff'}}
-          onPress={() => setSelected('wifi')}>
-          <Text style={styles.buttonText}>Use WiFi</Text>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          android_ripple={{color: '#fff'}}
-          onPress={() => setSelected('hotspot')}>
-          <Text style={styles.buttonText}>Use Hotspot</Text>
-        </Pressable>
-      </View>
-    </View>
+    <NavigationContainer>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name="ScanDevices"
+                    component={ScanDevicesScreen}
+                />
+                
+            </Stack.Navigator>
+        </NavigationContainer>
   );
 }
 

@@ -20,6 +20,72 @@ type WifiScreenProps = {
 export default function HotspotScreen({back}: WifiScreenProps) {
   const [devices, setDevices] = React.useState<Device[]>([]);
 
+  const checkHotspotEnabled = async () => {
+    try {
+      const state = await HotspotManager.isHotspotEnabled();
+      ToastAndroid.show(
+        `Hotspot state: ${state}`,
+        ToastAndroid.SHORT,
+      );
+    } catch (error) {
+      if (error instanceof TetheringError) {
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+      }
+      console.log(error);
+    }
+  }
+
+  const turnOnHotspot = async () => {
+    try {
+      await HotspotManager.setHotspotEnabled(true);
+      ToastAndroid.show('Hotspot Enabled', ToastAndroid.SHORT);
+    } catch (error: any) {
+      if (error instanceof TetheringError) {
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+      }
+      console.log(error);
+    }
+  }
+
+  const turnOffHostspot = async () => {
+    try {
+      await HotspotManager.setHotspotEnabled(false);
+      ToastAndroid.show('Hotspot Disabled', ToastAndroid.SHORT);
+    } catch (error: any) {
+      if (error instanceof TetheringError) {
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+      }
+      console.log(error);
+    }
+  }
+
+  const turnOnLocalHotspot = async () => {
+    try {
+      const network = await HotspotManager.setLocalHotspotEnabled(
+        true,
+      );
+      ToastAndroid.show('Local Hotspot Enabled', ToastAndroid.SHORT);
+      console.log(network);
+    } catch (error: any) {
+      if (error instanceof TetheringError) {
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+      }
+      console.log(error);
+    }
+  }
+
+  const turnOffLocalHotspot = async () => {
+    try {
+      await HotspotManager.setLocalHotspotEnabled(false);
+      ToastAndroid.show('Local Hotspot Disabled', ToastAndroid.SHORT);
+    } catch (error: any) {
+      if (error instanceof TetheringError) {
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+      }
+      console.log(error);
+    }
+  }
+
   return (
     <ScrollView>
       <Pressable
@@ -29,100 +95,53 @@ export default function HotspotScreen({back}: WifiScreenProps) {
         <Text>Back to home</Text>
       </Pressable>
 
-      <View style={styles.wrapper}>
+      <View style={styles.wrapper} id='HotspotStates'>
         <Text style={styles.wrapperHeader}>Hotspot States</Text>
         <View style={{width: '100%'}}>
           <Pressable
+            id='checkHotspotEnabled'
             style={styles.button}
             android_ripple={{color: '#ccc'}}
-            onPress={async () => {
-              try {
-                const state = await HotspotManager.isHotspotEnabled();
-                ToastAndroid.show(
-                  `Hotspot state: ${state}`,
-                  ToastAndroid.SHORT,
-                );
-              } catch (error) {
-                if (error instanceof TetheringError) {
-                  ToastAndroid.show(error.message, ToastAndroid.LONG);
-                }
-                console.log(error);
-              }
-            }}>
+            onPress={checkHotspotEnabled}>
             <Text style={{color: '#000'}}>Check Hotspot Enabled</Text>
           </Pressable>
+
           <Pressable
+            id='turnOnHotspot'
             style={styles.button}
             android_ripple={{color: '#fff'}}
-            onPress={async () => {
-              try {
-                await HotspotManager.setHotspotEnabled(true);
-                ToastAndroid.show('Hotspot Enabled', ToastAndroid.SHORT);
-              } catch (error: any) {
-                if (error instanceof TetheringError) {
-                  ToastAndroid.show(error.message, ToastAndroid.LONG);
-                }
-                console.log(error);
-              }
-            }}>
+            onPress={turnOnHotspot}>
             <Text style={{color: '#000'}}>Turn on hotpot</Text>
           </Pressable>
+
           <Pressable
+            id='turnOffHotspot'
             style={styles.button}
             android_ripple={{color: '#fff'}}
-            onPress={async () => {
-              try {
-                await HotspotManager.setHotspotEnabled(false);
-                ToastAndroid.show('Hotspot Disabled', ToastAndroid.SHORT);
-              } catch (error: any) {
-                if (error instanceof TetheringError) {
-                  ToastAndroid.show(error.message, ToastAndroid.LONG);
-                }
-                console.log(error);
-              }
-            }}>
+            onPress={turnOffHostspot}>
             <Text style={{color: '#000'}}>Turn off hotpot</Text>
           </Pressable>
+
           <Pressable
+            id='turnOnLocalHotspot'
             style={styles.button}
             android_ripple={{color: '#fff'}}
-            onPress={async () => {
-              try {
-                const network = await HotspotManager.setLocalHotspotEnabled(
-                  true,
-                );
-                ToastAndroid.show('Local Hotspot Enabled', ToastAndroid.SHORT);
-                console.log(network);
-              } catch (error: any) {
-                if (error instanceof TetheringError) {
-                  ToastAndroid.show(error.message, ToastAndroid.LONG);
-                }
-                console.log(error);
-              }
-            }}>
+            onPress={turnOnLocalHotspot}>
             <Text style={{color: '#000'}}>Turn on local hotpot</Text>
           </Pressable>
+
           <Pressable
+            id='turnOffLocalHotspot'
             style={styles.button}
             android_ripple={{color: '#fff'}}
-            onPress={async () => {
-              try {
-                await HotspotManager.setLocalHotspotEnabled(false);
-                ToastAndroid.show('Local Hotspot Disabled', ToastAndroid.SHORT);
-              } catch (error: any) {
-                if (error instanceof TetheringError) {
-                  ToastAndroid.show(error.message, ToastAndroid.LONG);
-                }
-                console.log(error);
-              }
-            }}>
+            onPress={turnOffLocalHotspot}>
             <Text style={{color: '#000'}}>Turn off local hotpot</Text>
           </Pressable>
         </View>
       </View>
 
       <View style={styles.wrapper}>
-        <Text style={styles.wrapperHeader}>Hotspot Helpers</Text>
+        <Text style={styles.wrapperHeader}>Hotspot Helperssss</Text>
         <View style={{width: '100%'}}>
           <Pressable
             style={styles.button}
