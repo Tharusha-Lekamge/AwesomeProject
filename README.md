@@ -22,6 +22,8 @@ yarn start
 
 Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
 
+https://blog.logrocket.com/using-react-native-ble-manager-mobile-app/#:~:text=react%2Dnative%2Dble%2Dmanager%20has%20a%20method%20called%20enableBluetooth,ble%2Dmanager%20return%20a%20promise.&text=Also%2C%20make%20sure%20your%20location%20is%20turned%20on.
+
 ### For Android
 
 ```bash
